@@ -21,9 +21,9 @@
   </script>
 
   <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
+<meta property="og:title" content="Jingjing&#39;s Blogs">
 <meta property="og:url" content="https://jingjing1219.github.io/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Jingjing&#39;s Blogs">
 <meta property="og:locale" content="en_US">
 <meta property="article:author" content="Jingjing1219">
 <meta name="twitter:card" content="summary">
@@ -40,7 +40,7 @@
   };
 </script>
 
-  <title>Hexo</title>
+  <title>Jingjing's Blogs</title>
   
 
 
@@ -92,7 +92,7 @@
     <div>
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Hexo</span>
+        <span class="site-title">Jingjing's Blogs</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
@@ -144,6 +144,121 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jingjing1219.github.io/2020/04/02/%E6%B1%82%E7%9B%B8%E6%9C%BA%E5%9C%A8%E4%B8%96%E7%95%8C%E5%9D%90%E6%A0%87%E7%B3%BB%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jingjing1219">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jingjing's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/02/%E6%B1%82%E7%9B%B8%E6%9C%BA%E5%9C%A8%E4%B8%96%E7%95%8C%E5%9D%90%E6%A0%87%E7%B3%BB%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE/" class="post-title-link" itemprop="url">求相机在世界坐标系中的位置</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-02 15:56:29" itemprop="dateCreated datePublished" datetime="2020-04-02T15:56:29+08:00">2020-04-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-08 22:58:17" itemprop="dateModified" datetime="2020-04-08T22:58:17+08:00">2020-04-08</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>由于实验室项目需求，我们自己开发无人机的视觉模块，从第一步做起，借助标记物，求相机在世界坐标系中的位置。<br>总体步骤分为3步：</p>
+<ul>
+<li>第一步进行单目相机的标定</li>
+<li>第二步进行PnP求解</li>
+<li>第三步解算出相机的坐标<br>参考链接:<br>(<a href="https://www.cnblogs.com/subic/p/8296794.html" target="_blank" rel="noopener">https://www.cnblogs.com/subic/p/8296794.html</a>)  (<a href="https://blog.csdn.net/cocoaqin/article/details/77848588" target="_blank" rel="noopener">https://blog.csdn.net/cocoaqin/article/details/77848588</a>)</li>
+</ul>
+<h2 id="单目相机标定"><a href="#单目相机标定" class="headerlink" title="单目相机标定"></a>单目相机标定</h2><h2 id="PnP求解"><a href="#PnP求解" class="headerlink" title="PnP求解"></a>PnP求解</h2><p>这里使用的标记物是棋盘格，我们取棋盘格中的4个点来进行PnP求解。<br>Opencv函数solvePnP介绍：</p>
+<h3 id="1、函数原型（官网链接-）："><a href="#1、函数原型（官网链接-）：" class="headerlink" title="1、函数原型（官网链接 ）："></a>1、函数原型（<a href="https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#solvepnp" target="_blank" rel="noopener">官网链接</a> ）：</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv2.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs[, rvec[, tvec[, useExtrinsicGuess[, flags]]]]) → retval, rvec, tvec</span><br></pre></td></tr></table></figure>
+<p>参数解释：</p>
+<ul>
+<li><strong>objectPoints</strong>: 世界坐标系中的3D点坐标，单位mm</li>
+<li><strong>imagePoints</strong>: 图像坐标系中点的坐标，单位像素</li>
+<li><strong>cameraMatrix</strong>: 相机内参矩阵</li>
+<li><strong>distCoeffs</strong>: 畸变系数</li>
+<li><strong>rvec</strong>: 旋转向量</li>
+<li><strong>tvec</strong>: 平移向量</li>
+<li><strong>useExtrinsicGuess</strong>: 是否使用提供的rvec和tvec初始化调优</li>
+<li><strong>flags</strong>:<br>SOLVEPNP_ITERATIVE(迭代法)：默认值，它通过迭代求出重投影误差最小的解作为问题的最优解<br>SOLVEPNP_P3P：使用非常经典的Gao的P3P问题求解算法<br>SOLVEPNP_EPNP：使用文章《EPnP: Efficient Perspective-n-Point Camera Pose Estimation》中的方法求解<br>SOLVEPNP_DLS：Method is based on the paper of Joel A. Hesch and Stergios I. Roumeliotis. “A Direct Least-Squares (DLS) Method for PnP”<br>SOLVEPNP_UPN：Method is based on the paper of A.Penate-Sanchez, J.Andrade-Cetto, F.Moreno-Noguer. “Exhaustive Linearization for Robust Camera Pose and Focal Length Estimation” ([165]). In this case the function also estimates the parameters fx and fy assuming that both have the same value. Then the cameraMatrix is updated with the estimated focal length.</li>
+</ul>
+<p><strong>关于选取点个数的注意点</strong>：solvePnP需要至少3组点：P3P只使用4组点，3组求出多个解，第四组确定最优解；EPnP使用大于等于3组点；迭代法调用cvFindExtrinsicCameraParams2，进而使用SVD分解并调用cvFindHomography，而cvFindHomography需要至少4组点。(<a href="https://blog.csdn.net/flyyufenfei/article/details/70440067?depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1&utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1" target="_blank" rel="noopener">参考博客</a>)</p>
+<h3 id="2、实验中使用的具体形式"><a href="#2、实验中使用的具体形式" class="headerlink" title="2、实验中使用的具体形式"></a>2、实验中使用的具体形式</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ret, rvec, tvec = cv2.solvePnP(object_3d_point, object_2d_point, camera_matrix, dist_coeffs)</span><br></pre></td></tr></table></figure>
+<p>我们可以自行选择世界坐标系的原点，在实验中，我们选择棋盘格的左上角作为世界坐标系的原点，选取4个点来求解PnP。所以世界坐标系的坐标为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">object_3d_point = np.array(([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">                            [<span class="number">0</span>, <span class="number">21</span>, <span class="number">0</span>],</span><br><span class="line">                            [<span class="number">21</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">                            [<span class="number">21</span>, <span class="number">21</span>, <span class="number">0</span>]), dtype = np.double)</span><br></pre></td></tr></table></figure>
+<p>图像中点的坐标 object_2d_point ，通过</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cv2.findChessboardCorners</span><br><span class="line">cv2.cornerSubPix</span><br></pre></td></tr></table></figure>
+<p>这两个函数，找到棋盘格的角点，返回值即为棋盘格角点坐标。</p>
+<p>寻找棋盘格角点函数解释(<a href="http://www.manongjc.com/detail/8-yoyyyxegvpyklop.html" target="_blank" rel="noopener">参考博客</a>)：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">retval, corners  =  cv.findChessboardCorners(image, patternSize[, corners[, flags]])</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>image</strong>: 棋盘格图片，必须是8位的灰度图，或者彩色图</li>
+<li><strong>patternSize</strong>： 每个棋盘行和列的内角数(patternSize = cvSize(points_per_row,points_per_colum) = cvSize(columns,rows))</li>
+<li><strong>corners</strong>: 检测到的角的输出数组</li>
+<li><strong>flags</strong>: 各种操作标志，可以为零或以下值的组合：<br>CALIB_CB_ADAPTIVE_THRESH 使用自适应阈值处理将图像转换为黑白图像，而不是固定的阈值水平（根据平均图像亮度计算）。<br>CALIB_CB_NORMALIZE_IMAGE 在应用固定或自适应阈值设置之前，使用equalizeHist对图像伽玛进行归一化。<br>CALIB_CB_FILTER_QUADS 使用其他条件（如轮廓区域，周长，正方形）来过滤在轮廓检索阶段提取的假四边形。<br>CALIB_CB_FAST_CHECK 对查找棋盘角的图像进行快速检查，如果未找到，则将调用快捷。 当未观察到棋盘时，这可以大大降低退化状态下的通话速度。</li>
+</ul>
+<p>该函数尝试确定输入图像是否是棋盘图案的视图，并找到棋盘内部角。 如果找到了所有角并将它们按一定顺序放置（逐行，在每一行中从左到右），该函数将返回一个非零值。 否则，如果函数无法找到所有角或对其进行重新排序，则返回0。例如，常规棋盘具有8 x 8正方形和7 x 7个内部角，即黑色正方形相互接触的点。 检测到的坐标是近似值，为了更准确地确定其位置，该函数调用cornerSubPix。 如果返回的坐标不够准确，则还可以将函数cornerSubPix与其他参数一起使用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv2.cornerSubPix(image, corners, winSize, zeroZone, criteria)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>image</strong>: 输入图像</li>
+<li><strong>corners</strong>: 输入角的初始坐标和提供给输出的精确坐标</li>
+<li><strong>winSize</strong>: 搜索窗口边长的一半。 例如，如果winSize = Size（5,5），则使用5 * 2 + 1 x 5 * 2 + 1 = 11 x 11搜索窗口</li>
+<li><strong>zeroZone</strong>: 搜索区域中间死区大小的一半，在该死区上不进行下式求和。 有时使用它来避免自相关矩阵可能的奇异性。 值（-1，-1）表示没有这样的大小</li>
+<li><strong>criteria</strong>: 角点精准化迭代过程的终止条件。也就是当迭代次数超过criteria.maxCount，或者角点位置变化小于criteria.epsilon时，停止迭代过程。<br>注：终止条件怎么给，需要再看一下。</li>
+</ul>
+<p>相机的内参矩阵和畸变系数在相机标定步骤中已经得出。</p>
+<h2 id="解算相机在世界坐标系中的坐标"><a href="#解算相机在世界坐标系中的坐标" class="headerlink" title="解算相机在世界坐标系中的坐标"></a>解算相机在世界坐标系中的坐标</h2><p>关于相机模型的建立，和成像过程中的四个坐标系之间的关系，参见我的另外一篇博客<a href="/2020/03/27/%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/" title="单目相机模型总结笔记">单目相机模型总结笔记</a>。<br>其中公式<br><img src="/images/WCRtEquation.png" alt=""><br>表示相机坐标系中的点和世界坐标系的转换关系。由于我们要求的是相机在世界坐标系中的坐标，所以X<sub>c</sub>、Y<sub>c</sub>、Z<sub>c</sub>为0，相应，相机的世界坐标 = -R<sup>-1</sup>t。 R为旋转矩阵，t为平移向量。由于R是正交矩阵，R<sup>-1</sup> = R<sup>T</sup>，也可以写为相机的世界坐标 = -R<sup>T</sup>t。</p>
+<p>在上一节中通过solvePnP解出的rvec和tvec分别为旋转向量和平移向量，需要将旋转向量转换为旋转矩阵</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rotM = cv2.Rodrigues(rvecs)[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<p>然后就可以求出相机在世界坐标系的三维坐标：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">camera_position = -np.matrix(rotM).T * np.matrix(tvecs)</span><br></pre></td></tr></table></figure>
+
+<h2 id="实验结果分析"><a href="#实验结果分析" class="headerlink" title="实验结果分析"></a>实验结果分析</h2><p>在单张图片的情况下，定位效果还是可以的，但是在视频实时定位中，效果非常差，</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="https://jingjing1219.github.io/2020/03/27/%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -153,7 +268,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
+      <meta itemprop="name" content="Jingjing's Blogs">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -167,10 +282,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-03-27 20:16:45 / Modified: 22:10:05" itemprop="dateCreated datePublished" datetime="2020-03-27T20:16:45+08:00">2020-03-27</time>
+              <time title="Created: 2020-03-27 20:16:45" itemprop="dateCreated datePublished" datetime="2020-03-27T20:16:45+08:00">2020-03-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-02 14:13:32" itemprop="dateModified" datetime="2020-04-02T14:13:32+08:00">2020-04-02</time>
+              </span>
 
           
 
@@ -190,7 +311,8 @@
 <h2 id="图像坐标系和相机坐标系之间的关系"><a href="#图像坐标系和相机坐标系之间的关系" class="headerlink" title="图像坐标系和相机坐标系之间的关系"></a>图像坐标系和相机坐标系之间的关系</h2><p><img src="/images/FigAndCamear.png" alt=""><br><img src="/images/FigAndCamearEqua1.png" alt=""><br><img src="/images/FigAndCamearEqua2.png" alt=""></p>
 <h2 id="世界坐标系到像素坐标系的转换关系"><a href="#世界坐标系到像素坐标系的转换关系" class="headerlink" title="世界坐标系到像素坐标系的转换关系"></a>世界坐标系到像素坐标系的转换关系</h2><p>由以上的3个关系，我们可以直接得到世界坐标系到像素坐标系的关系<br><img src="/images/KTP.png" alt=""></p>
 <p>参考链接 (<a href="https://blog.csdn.net/qq_37791134/article/details/80942171" target="_blank" rel="noopener">https://blog.csdn.net/qq_37791134/article/details/80942171</a>)</p>
-
+<h2 id="关于相机标定的一些笔记"><a href="#关于相机标定的一些笔记" class="headerlink" title="关于相机标定的一些笔记"></a>关于相机标定的一些笔记</h2><p>一种是用棋盘方块来标定，另外一种是张正友标定。可以总结一下。（论文《基于平移和旋转的单目视觉三维重建》关于这两个方面介绍的还不错）</p>
+<h2 id="关于坐标系之间的旋转关系，参考这篇博客-https-blog-csdn-net-haiying2016-article-details-77685459"><a href="#关于坐标系之间的旋转关系，参考这篇博客-https-blog-csdn-net-haiying2016-article-details-77685459" class="headerlink" title="关于坐标系之间的旋转关系，参考这篇博客:https://blog.csdn.net/haiying2016/article/details/77685459"></a>关于坐标系之间的旋转关系，参考这篇博客:<a href="https://blog.csdn.net/haiying2016/article/details/77685459" target="_blank" rel="noopener">https://blog.csdn.net/haiying2016/article/details/77685459</a></h2>
       
     </div>
 
@@ -218,7 +340,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
+      <meta itemprop="name" content="Jingjing's Blogs">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -232,10 +354,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-03-27 13:25:06 / Modified: 20:14:07" itemprop="dateCreated datePublished" datetime="2020-03-27T13:25:06+08:00">2020-03-27</time>
+              <time title="Created: 2020-03-27 13:25:06" itemprop="dateCreated datePublished" datetime="2020-03-27T13:25:06+08:00">2020-03-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-07 14:07:40" itemprop="dateModified" datetime="2020-04-07T14:07:40+08:00">2020-04-07</time>
+              </span>
 
           
 
@@ -250,7 +378,7 @@
       
           <p>今天写一篇在windows搭建自己的技术博客的指南，内容包括：</p>
 <ul>
-<li>博客的一些基本概念介绍</li>
+<li>一些基本概念介绍</li>
 <li>Nodejs安装</li>
 <li>Git for window安装</li>
 <li>GitHub注册</li>
@@ -260,9 +388,10 @@
 <li>hexo发布到github上</li>
 <li>修改hexo主题</li>
 <li>hexo几个基本指令总结</li>
+<li>个性化设置</li>
 <li>参考链接</li>
 </ul>
-<h2 id="博客的一些基本概念介绍"><a href="#博客的一些基本概念介绍" class="headerlink" title="博客的一些基本概念介绍"></a>博客的一些基本概念介绍</h2><p>首先从What,Why这两个方面来介绍一下我们的文章主题。</p>
+<h2 id="一些基本概念介绍"><a href="#一些基本概念介绍" class="headerlink" title="一些基本概念介绍"></a>一些基本概念介绍</h2><p>首先从What,Why这两个方面来介绍一下我们的文章主题。<br>（官网介绍）Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。<br>Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在GitHub和Heroku上，是搭建博客的首选框架。（摘自<a href="https://zhuanlan.zhihu.com/p/26625249）" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/26625249）</a><br>为什么要将博客部署到github上？ 首先免费，其次省心，最后可以学习使用 GitHub。（参考链接 <a href="https://io-oi.me/tech/hexo-next-optimization/）" target="_blank" rel="noopener">https://io-oi.me/tech/hexo-next-optimization/）</a></p>
 <h2 id="Nodejs安装"><a href="#Nodejs安装" class="headerlink" title="Nodejs安装"></a>Nodejs安装</h2><p>百度上搜索，下载后直接安装即可</p>
 <h2 id="Git-for-window安装"><a href="#Git-for-window安装" class="headerlink" title="Git for window安装"></a>Git for window安装</h2><p>直接百度搜索git for window，下载安装<br><img src="/images/imgGitFWin.png" alt=""></p>
 <h2 id="GitHub注册"><a href="#GitHub注册" class="headerlink" title="GitHub注册"></a>GitHub注册</h2><p>注册过程比较简单，不再赘述。<br>注册完成后，首先在github上新建一个仓库，命名一定要是 你的账号名.github.io（具体为什么是这样，我暂时还没有弄清楚）<br><img src="/images/githubNew.png" alt=""></p>
@@ -278,9 +407,16 @@
 <h2 id="修改hexo主题"><a href="#修改hexo主题" class="headerlink" title="修改hexo主题"></a>修改hexo主题</h2><p>我们使用Next主题，首先在主题里搜索next，然后打开，里面找到下载主题的选项。下载完成后解压，重命名为next，放到Blog里面的主题文件夹下。<br><img src="/images/next.png" alt=""><br>然后要修改配置文件，上文中提到的blog文件夹下的_config.yml 中，将主题后面修改为next<br><img src="/images/nextComfig.png" alt=""><br>然后保存，在主页预览一下，就会发现主题修改成功。</p>
 <p>在next文件夹下面的配置文件中，还可以修改不同的next的风格：<br><img src="/images/nextStyle.png" alt=""></p>
 <h2 id="hexo几个基本指令总结"><a href="#hexo几个基本指令总结" class="headerlink" title="hexo几个基本指令总结"></a>hexo几个基本指令总结</h2><p>Hexo指令总结：<br>Hexo clean 清理一下；<br>Hexo g: 生成（generate）；<br>Hexo s -p 5555: 发布到localhost:5555的博客网站（hexo s 启动预览（start））<br>Hexo d: 提交到github上；</p>
+<h2 id="个性化设置"><a href="#个性化设置" class="headerlink" title="个性化设置"></a>个性化设置</h2><p><a href="https://zhuanlan.zhihu.com/p/26625249" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/26625249</a></p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>(<a href="https://www.bilibili.com/video/BV1Yb411a7ty/?spm_id_from=333.788.videocard.4" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1Yb411a7ty/?spm_id_from=333.788.videocard.4</a>)<br>(<a href="https://www.bilibili.com/video/BV1cW411A7Jx?t=47&amp;p=7" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1cW411A7Jx?t=47&amp;p=7</a>)</p>
-<h2 id="关于如何写博客"><a href="#关于如何写博客" class="headerlink" title="关于如何写博客"></a>关于如何写博客</h2><p>（基于markdown格式的语法）<br>新建一个自己的博客：命令行输入：hexo n “我的第一篇博客”<br><img src="/images/firstBlog.png" alt=""><br>然后按照以下格式编辑格式：<br><img src="/images/markdown.png" alt=""></p>
+<h2 id="关于如何写博客"><a href="#关于如何写博客" class="headerlink" title="关于如何写博客"></a>关于如何写博客</h2><p>（基于markdown格式的语法）<br>新建一个自己的博客：命令行输入：hexo n “我的第一篇博客”<br><img src="/images/firstBlog.png" alt=""><br>然后按照以下格式编辑格式：<br><img src="/images/markdown.png" alt=""><br>这里的K就是相机内参，T就是相机外参。</p>
 <p>参考链接：(<a href="https://www.jianshu.com/p/5dbbba71b52d" target="_blank" rel="noopener">https://www.jianshu.com/p/5dbbba71b52d</a>)</p>
+<h2 id="博客的一些设置"><a href="#博客的一些设置" class="headerlink" title="博客的一些设置"></a>博客的一些设置</h2><ul>
+<li><p>增加侧栏菜单条目<br>默认的侧栏菜单条目有：首页、归档、标签、关于、搜索等。如果你想要增加其他的菜单条目，修改主题配置文件_config.yml里的Menu Settings中的menu和menu_icons两个地方。</p>
+</li>
+<li><p>插入图片之图床法<br>这时考虑把博文里的图片上传到某一网站，然后获得外部链接，使用Markdown语法，<img src="%E5%A4%96%E9%83%A8%E9%93%BE%E6%8E%A5" alt="图片信息"> 完成图片的插入，这种网站就被成为图床。常见的简易的图床网站有：贴图库图片外链 国内算比较好的图床我认为有两个：新浪微博和 七牛云 ，七牛云的使用方法可以参看其他文章。图床最重要的就是稳定速度快，所以在挑选图床的时候一定要仔细。<a href="https://zhuanlan.zhihu.com/p/26625249" target="_blank" rel="noopener">参考博客</a><br>如何使用七牛云参考链接(<a href="https://www.jianshu.com/p/6dce6094bf61" target="_blank" rel="noopener">https://www.jianshu.com/p/6dce6094bf61</a>)</p>
+</li>
+</ul>
 
       
     </div>
@@ -309,7 +445,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
+      <meta itemprop="name" content="Jingjing's Blogs">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -440,7 +576,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>

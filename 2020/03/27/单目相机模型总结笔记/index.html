@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="单目相机模型总结笔记">
 <meta property="og:url" content="https://jingjing1219.github.io/2020/03/27/%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:site_name" content="Jingjing&#39;s Blogs">
 <meta property="og:description" content="单目相机模型由于涉及四个坐标系之间的关系，让人比较难以理解。我每次看完之后就会忘记。这里写一篇博客来总结一下这个建模过程，一方面加深理解，另一方面可以随时拿出来翻阅。注：本博客内容是对这篇博客的总结，具体内容可以直接看这篇博客 https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_37791134&#x2F;article&#x2F;details&#x2F;80942171 介绍4个坐标系世界坐标系 (Xw,Yw,Zw)相机坐标">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="https://jingjing1219.github.io/images/WCRt.png">
@@ -38,7 +38,7 @@
 <meta property="og:image" content="https://jingjing1219.github.io/images/FigAndCamearEqua2.png">
 <meta property="og:image" content="https://jingjing1219.github.io/images/KTP.png">
 <meta property="article:published_time" content="2020-03-27T12:16:45.000Z">
-<meta property="article:modified_time" content="2020-03-27T14:10:05.211Z">
+<meta property="article:modified_time" content="2020-04-02T06:13:32.511Z">
 <meta property="article:author" content="Jingjing1219">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://jingjing1219.github.io/images/WCRt.png">
@@ -55,7 +55,7 @@
   };
 </script>
 
-  <title>单目相机模型总结笔记 | Hexo</title>
+  <title>单目相机模型总结笔记 | Jingjing's Blogs</title>
   
 
 
@@ -107,7 +107,7 @@
     <div>
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Hexo</span>
+        <span class="site-title">Jingjing's Blogs</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
@@ -168,7 +168,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Hexo">
+      <meta itemprop="name" content="Jingjing's Blogs">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -181,10 +181,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2020-03-27 20:16:45 / Modified: 22:10:05" itemprop="dateCreated datePublished" datetime="2020-03-27T20:16:45+08:00">2020-03-27</time>
+              <time title="Created: 2020-03-27 20:16:45" itemprop="dateCreated datePublished" datetime="2020-03-27T20:16:45+08:00">2020-03-27</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-02 14:13:32" itemprop="dateModified" datetime="2020-04-02T14:13:32+08:00">2020-04-02</time>
+              </span>
 
           
 
@@ -204,7 +210,8 @@
 <h2 id="图像坐标系和相机坐标系之间的关系"><a href="#图像坐标系和相机坐标系之间的关系" class="headerlink" title="图像坐标系和相机坐标系之间的关系"></a>图像坐标系和相机坐标系之间的关系</h2><p><img src="/images/FigAndCamear.png" alt=""><br><img src="/images/FigAndCamearEqua1.png" alt=""><br><img src="/images/FigAndCamearEqua2.png" alt=""></p>
 <h2 id="世界坐标系到像素坐标系的转换关系"><a href="#世界坐标系到像素坐标系的转换关系" class="headerlink" title="世界坐标系到像素坐标系的转换关系"></a>世界坐标系到像素坐标系的转换关系</h2><p>由以上的3个关系，我们可以直接得到世界坐标系到像素坐标系的关系<br><img src="/images/KTP.png" alt=""></p>
 <p>参考链接 (<a href="https://blog.csdn.net/qq_37791134/article/details/80942171" target="_blank" rel="noopener">https://blog.csdn.net/qq_37791134/article/details/80942171</a>)</p>
-
+<h2 id="关于相机标定的一些笔记"><a href="#关于相机标定的一些笔记" class="headerlink" title="关于相机标定的一些笔记"></a>关于相机标定的一些笔记</h2><p>一种是用棋盘方块来标定，另外一种是张正友标定。可以总结一下。（论文《基于平移和旋转的单目视觉三维重建》关于这两个方面介绍的还不错）</p>
+<h2 id="关于坐标系之间的旋转关系，参考这篇博客-https-blog-csdn-net-haiying2016-article-details-77685459"><a href="#关于坐标系之间的旋转关系，参考这篇博客-https-blog-csdn-net-haiying2016-article-details-77685459" class="headerlink" title="关于坐标系之间的旋转关系，参考这篇博客:https://blog.csdn.net/haiying2016/article/details/77685459"></a>关于坐标系之间的旋转关系，参考这篇博客:<a href="https://blog.csdn.net/haiying2016/article/details/77685459" target="_blank" rel="noopener">https://blog.csdn.net/haiying2016/article/details/77685459</a></h2>
     </div>
 
     
@@ -222,7 +229,10 @@
     <a href="/2020/03/27/Hexo-github%E6%90%AD%E5%BB%BA%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/" rel="prev" title="Hexo+github搭建技术博客">
       <i class="fa fa-chevron-left"></i> Hexo+github搭建技术博客
     </a></div>
-      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/02/%E6%B1%82%E7%9B%B8%E6%9C%BA%E5%9C%A8%E4%B8%96%E7%95%8C%E5%9D%90%E6%A0%87%E7%B3%BB%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE/" rel="next" title="求相机在世界坐标系中的位置">
+      求相机在世界坐标系中的位置 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
       </footer>
     
@@ -282,7 +292,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍4个坐标系"><span class="nav-number">1.</span> <span class="nav-text">介绍4个坐标系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#世界坐标系和相机坐标系之间的关系"><span class="nav-number">2.</span> <span class="nav-text">世界坐标系和相机坐标系之间的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图像坐标系和像素坐标系之间的关系"><span class="nav-number">3.</span> <span class="nav-text">图像坐标系和像素坐标系之间的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图像坐标系和相机坐标系之间的关系"><span class="nav-number">4.</span> <span class="nav-text">图像坐标系和相机坐标系之间的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#世界坐标系到像素坐标系的转换关系"><span class="nav-number">5.</span> <span class="nav-text">世界坐标系到像素坐标系的转换关系</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#介绍4个坐标系"><span class="nav-number">1.</span> <span class="nav-text">介绍4个坐标系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#世界坐标系和相机坐标系之间的关系"><span class="nav-number">2.</span> <span class="nav-text">世界坐标系和相机坐标系之间的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图像坐标系和像素坐标系之间的关系"><span class="nav-number">3.</span> <span class="nav-text">图像坐标系和像素坐标系之间的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#图像坐标系和相机坐标系之间的关系"><span class="nav-number">4.</span> <span class="nav-text">图像坐标系和相机坐标系之间的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#世界坐标系到像素坐标系的转换关系"><span class="nav-number">5.</span> <span class="nav-text">世界坐标系到像素坐标系的转换关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于相机标定的一些笔记"><span class="nav-number">6.</span> <span class="nav-text">关于相机标定的一些笔记</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于坐标系之间的旋转关系，参考这篇博客-https-blog-csdn-net-haiying2016-article-details-77685459"><span class="nav-number">7.</span> <span class="nav-text">关于坐标系之间的旋转关系，参考这篇博客:https:&#x2F;&#x2F;blog.csdn.net&#x2F;haiying2016&#x2F;article&#x2F;details&#x2F;77685459</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -296,7 +306,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
