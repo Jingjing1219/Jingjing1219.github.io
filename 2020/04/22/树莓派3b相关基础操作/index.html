@@ -20,19 +20,19 @@
     var CONFIG = {"hostname":"jingjing1219.github.io","root":"/","scheme":"Pisces","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Hello">
+  <meta name="description" content="最近一直在做树莓派视觉方面的相关东西，关于树莓派的一些基本操作，总是不知道怎么弄，就算是以前遇到过的东西，第二次看见还是会忘记。所以在这篇博客上把相关的基础东西记录下来。 树莓派opencv(python) 的相关操作1、pip和pip3的区别参考博客pip是python的包管理工具，pip和pip3版本不同，都位于Scripts\目录下：  如果系统中只安装了Python2，那么就只能使用pip">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="https://jingjing1219.github.io/2020/03/25/hello-world/index.html">
+<meta property="og:title" content="树莓派3b相关基础操作">
+<meta property="og:url" content="https://jingjing1219.github.io/2020/04/22/%E6%A0%91%E8%8E%93%E6%B4%BE3b%E7%9B%B8%E5%85%B3%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/index.html">
 <meta property="og:site_name" content="Jingjing&#39;s Blogs">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Hello">
+<meta property="og:description" content="最近一直在做树莓派视觉方面的相关东西，关于树莓派的一些基本操作，总是不知道怎么弄，就算是以前遇到过的东西，第二次看见还是会忘记。所以在这篇博客上把相关的基础东西记录下来。 树莓派opencv(python) 的相关操作1、pip和pip3的区别参考博客pip是python的包管理工具，pip和pip3版本不同，都位于Scripts\目录下：  如果系统中只安装了Python2，那么就只能使用pip">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2020-03-25T02:29:38.342Z">
-<meta property="article:modified_time" content="2020-03-27T08:18:00.606Z">
+<meta property="article:published_time" content="2020-04-22T13:39:12.000Z">
+<meta property="article:modified_time" content="2020-04-22T14:59:16.596Z">
 <meta property="article:author" content="Jingjing1219">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://jingjing1219.github.io/2020/03/25/hello-world/">
+<link rel="canonical" href="https://jingjing1219.github.io/2020/04/22/%E6%A0%91%E8%8E%93%E6%B4%BE3b%E7%9B%B8%E5%85%B3%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/">
 
 
 <script id="page-configurations">
@@ -44,7 +44,7 @@
   };
 </script>
 
-  <title>Hello World | Jingjing's Blogs</title>
+  <title>树莓派3b相关基础操作 | Jingjing's Blogs</title>
   
 
 
@@ -148,7 +148,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="en">
-    <link itemprop="mainEntityOfPage" href="https://jingjing1219.github.io/2020/03/25/hello-world/">
+    <link itemprop="mainEntityOfPage" href="https://jingjing1219.github.io/2020/04/22/%E6%A0%91%E8%8E%93%E6%B4%BE3b%E7%9B%B8%E5%85%B3%E5%9F%BA%E7%A1%80%E6%93%8D%E4%BD%9C/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -161,7 +161,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Hello World
+          树莓派3b相关基础操作
         </h1>
 
         <div class="post-meta">
@@ -170,16 +170,10 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
+              
 
-              <time title="Created: 2020-03-25 10:29:38" itemprop="dateCreated datePublished" datetime="2020-03-25T10:29:38+08:00">2020-03-25</time>
+              <time title="Created: 2020-04-22 21:39:12 / Modified: 22:59:16" itemprop="dateCreated datePublished" datetime="2020-04-22T21:39:12+08:00">2020-04-22</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2020-03-27 16:18:00" itemprop="dateModified" datetime="2020-03-27T16:18:00+08:00">2020-03-27</time>
-              </span>
 
           
 
@@ -192,19 +186,25 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Hello-Hexo-Jingjing"><a href="#Hello-Hexo-Jingjing" class="headerlink" title="Hello Hexo Jingjing"></a>Hello Hexo Jingjing</h2><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+        <p>最近一直在做树莓派视觉方面的相关东西，关于树莓派的一些基本操作，总是不知道怎么弄，就算是以前遇到过的东西，第二次看见还是会忘记。所以在这篇博客上把相关的基础东西记录下来。</p>
+<h2 id="树莓派opencv-python-的相关操作"><a href="#树莓派opencv-python-的相关操作" class="headerlink" title="树莓派opencv(python) 的相关操作"></a>树莓派opencv(python) 的相关操作</h2><h3 id="1、pip和pip3的区别"><a href="#1、pip和pip3的区别" class="headerlink" title="1、pip和pip3的区别"></a>1、pip和pip3的区别</h3><p><a href="https://blog.csdn.net/qq_40584960/article/details/86082019" target="_blank" rel="noopener">参考博客</a><br>pip是python的包管理工具，pip和pip3版本不同，都位于Scripts\目录下：</p>
+<ul>
+<li>如果系统中只安装了Python2，那么就只能使用pip。</li>
+<li>如果系统中只安装了Python3，那么既可以使用pip也可以使用pip3，二者是等价的。</li>
+<li>如果系统中同时安装了Python2和Python3，则pip默认给Python2用，pip3指定给Python3用。</li>
+<li>重要：虚拟环境中，若只存在一个python版本，可以认为在用系统中pip和pip3命令都是相同的</li>
+</ul>
+<h3 id="2、pip-install-和-sudo-apt-get-install的区别"><a href="#2、pip-install-和-sudo-apt-get-install的区别" class="headerlink" title="2、pip install 和 sudo apt-get install的区别"></a>2、pip install 和 sudo apt-get install的区别</h3><p>这两个都是安装指令，关于他们之间的区别，<a href="https://blog.csdn.net/oppo62258801/article/details/78834519/" target="_blank" rel="noopener">这篇博客</a>里讲的比较清楚</p>
+<h3 id="3、安装scipy"><a href="#3、安装scipy" class="headerlink" title="3、安装scipy"></a>3、安装scipy</h3><p>在运行一个程序时，需要用到scipy，因为安装scipy之前要安装很多依赖包，包括numpy。但是我的树莓派上已经安装了numpy，导致我也不知道我现在还缺少什么依赖包，所以我首先，按照网上说的，全部安装一遍：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libblas-dev</span><br><span class="line">sudo apt-get install liblapack-dev</span><br><span class="line">sudo apt-get install gfortran</span><br><span class="line">sudo apt-get install python-scipy</span><br></pre></td></tr></table></figure>
+<p>装了一晚上scipy，明明装成功了，还是报错：No module named ‘scipy’。后来发现，这是在python里面安装成功了，但是在python3里面却没有安装成功。因为import python3后，在里面import scipy，就是No module named ‘scipy’。</p>
+<p>后面使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip3 install scipy</span><br></pre></td></tr></table></figure>
+<p>但是下载速度太慢了，而且很久之后还报错，不成功。<br>于是先从官网下载scipy安装包，然后解压安装，具体教程参加<a href="https://blog.csdn.net/mark20170902/article/details/73799841" target="_blank" rel="noopener">这篇博客</a><br>后面总算是安装成功了，但是，又报错：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;usr&#x2F;local&#x2F;lib&#x2F;python3.5&#x2F;dist-packages&#x2F;scipy-1.4.0-py3.5-linux-armv71.egg&#x2F;scipy&#x2F;_init_.py:144: UserWarning: Numpy 1.13.3 or above is required for this version of scipy (detected version 1.12.1)</span><br></pre></td></tr></table></figure>
+<p>初步分析是numpy需要升级，于是使用</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip3 --upgrade scipy??</span><br></pre></td></tr></table></figure>
+<p>来升级，但是还是会报错超时。<br>明天看看这个问题应该怎么解决。</p>
 
     </div>
 
@@ -219,10 +219,13 @@
 
         
     <div class="post-nav">
-      <div class="post-nav-item"></div>
       <div class="post-nav-item">
-    <a href="/2020/03/27/Hexo-github%E6%90%AD%E5%BB%BA%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/" rel="next" title="Hexo+github搭建技术博客">
-      Hexo+github搭建技术博客 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/04/22/Java-Begin/" rel="prev" title="Java Begin">
+      <i class="fa fa-chevron-left"></i> Java Begin
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/23/%E6%A0%91%E8%8E%93%E6%B4%BE%E9%80%9A%E4%BF%A1/" rel="next" title="树莓派通信">
+      树莓派通信 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -283,7 +286,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hello-Hexo-Jingjing"><span class="nav-number">1.</span> <span class="nav-text">Hello Hexo Jingjing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Quick-Start"><span class="nav-number">2.</span> <span class="nav-text">Quick Start</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-a-new-post"><span class="nav-number">2.1.</span> <span class="nav-text">Create a new post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Run-server"><span class="nav-number">2.2.</span> <span class="nav-text">Run server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-static-files"><span class="nav-number">2.3.</span> <span class="nav-text">Generate static files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deploy-to-remote-sites"><span class="nav-number">2.4.</span> <span class="nav-text">Deploy to remote sites</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#树莓派opencv-python-的相关操作"><span class="nav-number">1.</span> <span class="nav-text">树莓派opencv(python) 的相关操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、pip和pip3的区别"><span class="nav-number">1.1.</span> <span class="nav-text">1、pip和pip3的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、pip-install-和-sudo-apt-get-install的区别"><span class="nav-number">1.2.</span> <span class="nav-text">2、pip install 和 sudo apt-get install的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3、安装scipy"><span class="nav-number">1.3.</span> <span class="nav-text">3、安装scipy</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
