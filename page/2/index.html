@@ -144,6 +144,344 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jingjing1219.github.io/2020/04/02/%E6%B1%82%E7%9B%B8%E6%9C%BA%E5%9C%A8%E4%B8%96%E7%95%8C%E5%9D%90%E6%A0%87%E7%B3%BB%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jingjing1219">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jingjing's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/04/02/%E6%B1%82%E7%9B%B8%E6%9C%BA%E5%9C%A8%E4%B8%96%E7%95%8C%E5%9D%90%E6%A0%87%E7%B3%BB%E4%B8%AD%E7%9A%84%E4%BD%8D%E7%BD%AE/" class="post-title-link" itemprop="url">求相机在世界坐标系中的位置</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-04-02 15:56:29" itemprop="dateCreated datePublished" datetime="2020-04-02T15:56:29+08:00">2020-04-02</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-22 15:23:52" itemprop="dateModified" datetime="2020-04-22T15:23:52+08:00">2020-04-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>由于实验室项目需求，我们自己开发无人机的视觉模块，从第一步做起，借助标记物，求相机在世界坐标系中的位置。<br>总体步骤分为3步：</p>
+<ul>
+<li>第一步进行单目相机的标定</li>
+<li>第二步进行PnP求解</li>
+<li>第三步解算出相机的坐标<br>参考链接:<br>(<a href="https://www.cnblogs.com/subic/p/8296794.html" target="_blank" rel="noopener">https://www.cnblogs.com/subic/p/8296794.html</a>)  (<a href="https://blog.csdn.net/cocoaqin/article/details/77848588" target="_blank" rel="noopener">https://blog.csdn.net/cocoaqin/article/details/77848588</a>)</li>
+</ul>
+<h2 id="单目相机标定"><a href="#单目相机标定" class="headerlink" title="单目相机标定"></a>单目相机标定</h2><p>cv2.calibrateCamera函数(<a href="https://blog.csdn.net/weixin_41695564/article/details/80422329?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task" target="_blank" rel="noopener">参考链接</a>)</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">calibrateCamera(objectPoints, imagePoints, imageSize, cameraMatrix, distCoeffs[, rvecs[, tvecs[, flags[, criteria]]]]) -&gt; retval, cameraMatrix, distCoeffs, rvecs, tvecs</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><strong>objectPoints</strong>: 世界坐标系中的三维点。需要依据棋盘上单个黑白矩阵的大小，计算出（初始化）每一个内角点的世界坐标</p>
+</li>
+<li><p><strong>imagePoints</strong>: 每一个内角点对应的图像坐标点</p>
+</li>
+<li><p><strong>imageSize</strong>: 图像的像素尺寸大小，在计算相机的内参和畸变矩阵时需要使用到该参数</p>
+</li>
+<li><p><strong>cameraMatrix</strong>: 相机的内参矩阵</p>
+</li>
+<li><p><strong>distCoeffs</strong>: 畸变矩阵</p>
+</li>
+<li><p><strong>rvecs</strong>: 旋转向量</p>
+</li>
+<li><p><strong>tvecs</strong>: 位移向量</p>
+</li>
+<li><p><strong>flags</strong>: 标定时所采用的算法。有如下几个参数：<br>CV_CALIB_USE_INTRINSIC_GUESS：使用该参数时，在cameraMatrix矩阵中应该有fx,fy,u0,v0的估计值。否则的话，将初始化(u0,v0）图像的中心点，使用最小二乘估算出fx，fy。<br>CV_CALIB_FIX_PRINCIPAL_POINT：在进行优化时会固定光轴点。当CV_CALIB_USE_INTRINSIC_GUESS参数被设置，光轴点将保持在中心或者某个输入的值。<br>CV_CALIB_FIX_ASPECT_RATIO：固定fx/fy的比值，只将fy作为可变量，进行优化计算。当CV_CALIB_USE_INTRINSIC_GUESS没有被设置，fx和fy将会被忽略。只有fx/fy的比值在计算中会被用到。<br>CV_CALIB_ZERO_TANGENT_DIST：设定切向畸变参数（p1,p2）为零。<br>CV_CALIB_FIX_K1,…,CV_CALIB_FIX_K6：对应的径向畸变在优化中保持不变。<br>CV_CALIB_RATIONAL_MODEL：计算k4，k5，k6三个畸变参数。如果没有设置，则只计算其它5个畸变参数</p>
+</li>
+<li><p><strong>criteria</strong>: 最优迭代终止条件设定</p>
+<p>在使用该函数进行标定运算之前，需要对棋盘上每一个内角点的空间坐标系的位置坐标进行初始化，标定的结果是生成相机的内参矩阵cameraMatrix、相机的5个畸变系数distCoeffs，另外每张图像都会生成属于自己的平移向量和旋转向量。</p>
+</li>
+</ul>
+<h2 id="PnP求解"><a href="#PnP求解" class="headerlink" title="PnP求解"></a>PnP求解</h2><p>这里使用的标记物是棋盘格，我们取棋盘格中的4个点来进行PnP求解。<br>Opencv函数solvePnP介绍：</p>
+<h3 id="1、函数原型（官网链接-）："><a href="#1、函数原型（官网链接-）：" class="headerlink" title="1、函数原型（官网链接 ）："></a>1、函数原型（<a href="https://docs.opencv.org/2.4/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html#solvepnp" target="_blank" rel="noopener">官网链接</a> ）：</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv2.solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs[, rvec[, tvec[, useExtrinsicGuess[, flags]]]]) → retval, rvec, tvec</span><br></pre></td></tr></table></figure>
+<p>参数解释：</p>
+<ul>
+<li><strong>objectPoints</strong>: 世界坐标系中的3D点坐标，单位mm</li>
+<li><strong>imagePoints</strong>: 图像坐标系中点的坐标，单位像素</li>
+<li><strong>cameraMatrix</strong>: 相机内参矩阵</li>
+<li><strong>distCoeffs</strong>: 畸变系数</li>
+<li><strong>rvec</strong>: 旋转向量</li>
+<li><strong>tvec</strong>: 平移向量</li>
+<li><strong>useExtrinsicGuess</strong>: 是否使用提供的rvec和tvec初始化调优</li>
+<li><strong>flags</strong>:<br>SOLVEPNP_ITERATIVE(迭代法)：默认值，它通过迭代求出重投影误差最小的解作为问题的最优解<br>SOLVEPNP_P3P：使用非常经典的Gao的P3P问题求解算法<br>SOLVEPNP_EPNP：使用文章《EPnP: Efficient Perspective-n-Point Camera Pose Estimation》中的方法求解<br>SOLVEPNP_DLS：Method is based on the paper of Joel A. Hesch and Stergios I. Roumeliotis. “A Direct Least-Squares (DLS) Method for PnP”<br>SOLVEPNP_UPN：Method is based on the paper of A.Penate-Sanchez, J.Andrade-Cetto, F.Moreno-Noguer. “Exhaustive Linearization for Robust Camera Pose and Focal Length Estimation” ([165]). In this case the function also estimates the parameters fx and fy assuming that both have the same value. Then the cameraMatrix is updated with the estimated focal length.</li>
+</ul>
+<p><strong>关于选取点个数的注意点</strong>：solvePnP需要至少3组点：P3P只使用4组点，3组求出多个解，第四组确定最优解；EPnP使用大于等于3组点；迭代法调用cvFindExtrinsicCameraParams2，进而使用SVD分解并调用cvFindHomography，而cvFindHomography需要至少4组点。(<a href="https://blog.csdn.net/flyyufenfei/article/details/70440067?depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1&utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1" target="_blank" rel="noopener">参考博客</a>)</p>
+<h3 id="2、实验中使用的具体形式"><a href="#2、实验中使用的具体形式" class="headerlink" title="2、实验中使用的具体形式"></a>2、实验中使用的具体形式</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ret, rvec, tvec = cv2.solvePnP(object_3d_point, object_2d_point, camera_matrix, dist_coeffs)</span><br></pre></td></tr></table></figure>
+<p>我们可以自行选择世界坐标系的原点，在实验中，我们选择棋盘格的左上角作为世界坐标系的原点，选取4个点来求解PnP。所以世界坐标系的坐标为：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">object_3d_point = np.array(([<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">                            [<span class="number">0</span>, <span class="number">21</span>, <span class="number">0</span>],</span><br><span class="line">                            [<span class="number">21</span>, <span class="number">0</span>, <span class="number">0</span>],</span><br><span class="line">                            [<span class="number">21</span>, <span class="number">21</span>, <span class="number">0</span>]), dtype = np.double)</span><br></pre></td></tr></table></figure>
+<p>图像中点的坐标 object_2d_point ，通过</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cv2.findChessboardCorners()</span><br><span class="line">cv2.cornerSubPix()</span><br></pre></td></tr></table></figure>
+<p>这两个函数，找到棋盘格的角点，返回值即为棋盘格角点坐标。</p>
+<p>寻找棋盘格角点函数解释(<a href="http://www.manongjc.com/detail/8-yoyyyxegvpyklop.html" target="_blank" rel="noopener">参考博客</a>)：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">retval, corners  =  cv.findChessboardCorners(image, patternSize[, corners[, flags]])</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>image</strong>: 棋盘格图片，必须是8位的灰度图，或者彩色图</li>
+<li><strong>patternSize</strong>： 每个棋盘行和列的内角数(patternSize = cvSize(points_per_row,points_per_colum) = cvSize(columns,rows))</li>
+<li><strong>corners</strong>: 检测到的角的输出数组</li>
+<li><strong>flags</strong>: 各种操作标志，可以为零或以下值的组合：<br>CALIB_CB_ADAPTIVE_THRESH 使用自适应阈值处理将图像转换为黑白图像，而不是固定的阈值水平（根据平均图像亮度计算）。<br>CALIB_CB_NORMALIZE_IMAGE 在应用固定或自适应阈值设置之前，使用equalizeHist对图像伽玛进行归一化。<br>CALIB_CB_FILTER_QUADS 使用其他条件（如轮廓区域，周长，正方形）来过滤在轮廓检索阶段提取的假四边形。<br>CALIB_CB_FAST_CHECK 对查找棋盘角的图像进行快速检查，如果未找到，则将调用快捷。 当未观察到棋盘时，这可以大大降低退化状态下的通话速度。</li>
+</ul>
+<p>该函数尝试确定输入图像是否是棋盘图案的视图，并找到棋盘内部角。 如果找到了所有角并将它们按一定顺序放置（逐行，在每一行中从左到右），该函数将返回一个非零值。 否则，如果函数无法找到所有角或对其进行重新排序，则返回0。例如，常规棋盘具有8 x 8正方形和7 x 7个内部角，即黑色正方形相互接触的点。 检测到的坐标是近似值，为了更准确地确定其位置，该函数调用cornerSubPix。 如果返回的坐标不够准确，则还可以将函数cornerSubPix与其他参数一起使用。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv2.cornerSubPix(image, corners, winSize, zeroZone, criteria)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>image</strong>: 输入图像</li>
+<li><strong>corners</strong>: 输入角的初始坐标和提供给输出的精确坐标</li>
+<li><strong>winSize</strong>: 搜索窗口边长的一半。 例如，如果winSize = Size（5,5），则使用5 * 2 + 1 x 5 * 2 + 1 = 11 x 11搜索窗口</li>
+<li><strong>zeroZone</strong>: 搜索区域中间死区大小的一半，在该死区上不进行下式求和。 有时使用它来避免自相关矩阵可能的奇异性。 值（-1，-1）表示没有这样的大小</li>
+<li><strong>criteria</strong>: 角点精准化迭代过程的终止条件。也就是当迭代次数超过criteria.maxCount，或者角点位置变化小于criteria.epsilon时，停止迭代过程。<br>注：终止条件怎么给，需要再看一下。</li>
+</ul>
+<p>画棋盘格角点函数(<a href="https://blog.csdn.net/weixin_41695564/article/details/80422329?depth_1-utm_source=distribute.pc_relevant.none-task&utm_source=distribute.pc_relevant.none-task" target="_blank" rel="noopener">参考链接</a>)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cv2.drawChessboardCorners(image, patternSize, corners, patternWasFound)</span><br></pre></td></tr></table></figure>
+<ul>
+<li><strong>第一个参数image</strong>: 8位灰度或者彩色图像；</li>
+<li><strong>第二个参数patternSize</strong>: 每张标定棋盘上内角点的行列数； </li>
+<li><strong>第三个参数corners</strong>: 初始的角点坐标向量，同时作为亚像素坐标位置的输出，所以需要是浮点型数据；</li>
+<li><strong>第四个参数patternWasFound</strong>: 标志位，用来指示定义的棋盘内角点是否被完整的探测到，true表示别完整的探测到，函数会用直线依次连接所有的内角点，作为一个整体，false表示有未被探测到的内角点，这时候函数会以（红色）圆圈标记处检测到的内角点；</li>
+</ul>
+<p>相机的内参矩阵和畸变系数在相机标定步骤中已经得出。</p>
+<h2 id="解算相机在世界坐标系中的坐标"><a href="#解算相机在世界坐标系中的坐标" class="headerlink" title="解算相机在世界坐标系中的坐标"></a>解算相机在世界坐标系中的坐标</h2><p>关于相机模型的建立，和成像过程中的四个坐标系之间的关系，参见我的另外一篇博客<a href="/2020/03/27/%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/" title="单目相机模型总结笔记">单目相机模型总结笔记</a>。<br>其中公式<br><img src="/images/WCRtEquation.png" alt=""><br>表示相机坐标系中的点和世界坐标系的转换关系。由于我们要求的是相机在世界坐标系中的坐标，所以X<sub>c</sub>、Y<sub>c</sub>、Z<sub>c</sub>为0，相应，相机的世界坐标 = -R<sup>-1</sup>t。 R为旋转矩阵，t为平移向量。由于R是正交矩阵，R<sup>-1</sup> = R<sup>T</sup>，也可以写为相机的世界坐标 = -R<sup>T</sup>t。</p>
+<p>在上一节中通过solvePnP解出的rvec和tvec分别为旋转向量和平移向量，需要将旋转向量转换为旋转矩阵</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rotM = cv2.Rodrigues(rvecs)[<span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<p>然后就可以求出相机在世界坐标系的三维坐标：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">camera_position = -np.matrix(rotM).T * np.matrix(tvecs)</span><br></pre></td></tr></table></figure>
+
+<h2 id="实验结果分析"><a href="#实验结果分析" class="headerlink" title="实验结果分析"></a>实验结果分析</h2><p>在单张图片的情况下，定位效果还是可以的，但是在视频实时定位中，效果非常差，</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jingjing1219.github.io/2020/03/27/%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jingjing1219">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jingjing's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/27/%E5%8D%95%E7%9B%AE%E7%9B%B8%E6%9C%BA%E6%A8%A1%E5%9E%8B%E6%80%BB%E7%BB%93%E7%AC%94%E8%AE%B0/" class="post-title-link" itemprop="url">单目相机模型总结笔记</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-27 20:16:45" itemprop="dateCreated datePublished" datetime="2020-03-27T20:16:45+08:00">2020-03-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-04-22 18:48:53" itemprop="dateModified" datetime="2020-04-22T18:48:53+08:00">2020-04-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>单目相机模型由于涉及四个坐标系之间的关系，让人比较难以理解。我每次看完之后就会忘记。这里写一篇博客来总结一下这个建模过程，一方面加深理解，另一方面可以随时拿出来翻阅。注：本博客内容是对这篇博客的总结，具体内容可以直接看这篇博客 <a href="https://blog.csdn.net/qq_37791134/article/details/80942171" target="_blank" rel="noopener">https://blog.csdn.net/qq_37791134/article/details/80942171</a></p>
+<h2 id="介绍4个坐标系"><a href="#介绍4个坐标系" class="headerlink" title="介绍4个坐标系"></a>介绍4个坐标系</h2><p>世界坐标系 (X<sub>w</sub>,Y<sub>w</sub>,Z<sub>w</sub>)<br>相机坐标系（X<sub>c</sub>,Y<sub>c</sub>,Z<sub>c</sub>）<br>图像坐标系（x,y）<br>像素坐标系 (u,v)<br>我们最后需要求的是从世界坐标系到像素坐标系的一个转换关系，所以，这里我们逐步求取这个关系。<br>我们可以直接得到世界坐标系和相机坐标系之间的关系，也可以直接得到图像坐标系和像素坐标系之间的关系，还可以直接得到图像坐标系和相机坐标系之间的关系。最后就可以间接得到世界坐标系到像素坐标系的转换关系。</p>
+<h3 id="世界坐标系和相机坐标系之间的关系"><a href="#世界坐标系和相机坐标系之间的关系" class="headerlink" title="世界坐标系和相机坐标系之间的关系"></a>世界坐标系和相机坐标系之间的关系</h3><p>关于坐标系之间的旋转关系，<a href="https://blog.csdn.net/haiying2016/article/details/77685459" target="_blank" rel="noopener">参考这篇博客</a><br><img src="/images/WCRt.png" alt=""><br><img src="/images/WCRtEquation.png" alt=""><br><img src="/images/WCRtEquation2.png" alt=""></p>
+<h3 id="图像坐标系和像素坐标系之间的关系"><a href="#图像坐标系和像素坐标系之间的关系" class="headerlink" title="图像坐标系和像素坐标系之间的关系"></a>图像坐标系和像素坐标系之间的关系</h3><p><img src="/images/PixelAndFig.png" alt=""><br><img src="/images/PixelAndFigEqa1.png" alt=""><br><img src="/images/PixelAndFigEqa2.png" alt=""></p>
+<h3 id="图像坐标系和相机坐标系之间的关系"><a href="#图像坐标系和相机坐标系之间的关系" class="headerlink" title="图像坐标系和相机坐标系之间的关系"></a>图像坐标系和相机坐标系之间的关系</h3><p><img src="/images/FigAndCamear.png" alt=""><br><img src="/images/FigAndCamearEqua1.png" alt=""><br><img src="/images/FigAndCamearEqua2.png" alt=""></p>
+<h3 id="世界坐标系到像素坐标系的转换关系"><a href="#世界坐标系到像素坐标系的转换关系" class="headerlink" title="世界坐标系到像素坐标系的转换关系"></a>世界坐标系到像素坐标系的转换关系</h3><p>由以上的3个关系，我们可以直接得到世界坐标系到像素坐标系的关系<br>$$<br>Z_{c}\begin{bmatrix} u \\ v \\ 1 \\<br>\end{bmatrix}<br>=\begin{bmatrix} \frac{1}{dx} &amp; 0 &amp; u_{0} \\ 0 &amp; \frac{1}{dy} &amp; v_{0} \\ 0 &amp; 0 &amp; 1 \\<br>\end{bmatrix}<br>\begin{bmatrix} f &amp; 0 &amp; 0 &amp; 0 \\ 0 &amp; f &amp; 0 &amp; 0 \\ 0 &amp; 0 &amp; 1 &amp; 0 \\<br>\end{bmatrix}<br>\begin{bmatrix} R &amp; t \\ \vec{0} &amp; 1 \\<br>\end{bmatrix}<br>\begin{bmatrix} X_{w} \\ Y_{w} \\ Z_{w} \\ 1 \\<br>\end{bmatrix} $$<br>$$<br>=<br>\begin{bmatrix} f_{x} &amp; 0 &amp; u_{0} &amp; 0 \\ 0 &amp; f_{y} &amp; v_{0} &amp; 0 \\ 0 &amp; 0 &amp; 1 &amp; 0 \\<br>\end{bmatrix}<br>\begin{bmatrix} R &amp; t \\ \vec{0} &amp; 1 \\<br>\end{bmatrix}<br>\begin{bmatrix} X_{w} \\ Y_{w} \\ Z_{w} \\ 1 \\<br>\end{bmatrix} = KT\begin{bmatrix} X_{w} \\ Y_{w} \\ Z_{w} \\ 1 \\<br>\end{bmatrix}=<br>\begin{bmatrix} f_{x} &amp; 0 &amp; u_{0} \\ 0 &amp; f_{y} &amp; v_{0} \\ 0 &amp; 0 &amp; 1 \\<br>\end{bmatrix}<br>\begin{bmatrix} R &amp; t \\<br>\end{bmatrix}<br>\begin{bmatrix} X_{w} \\ Y_{w} \\ Z_{w} \\ 1 \\<br>\end{bmatrix} = KT\begin{bmatrix} X_{w} \\ Y_{w} \\ Z_{w} \\ 1 \\<br>\end{bmatrix}<br>$$</p>
+<p>其中<br>$$K = \begin{bmatrix} f_{x} &amp; 0 &amp; u_{0} \\<br> 0 &amp; f_{y} &amp; v_{0} \\<br> 0 &amp; 0 &amp; 1 \end{bmatrix}$$表示相机内参数，<br> $$T = \begin{bmatrix} R &amp; t \end{bmatrix}$$<br> 表示相机外参数。<a href="https://blog.csdn.net/qq_37791134/article/details/80942171" target="_blank" rel="noopener">参考链接</a></p>
+<p>另外，为了不失一般性，可以在相机的内参矩阵上添加一个扭曲参数$\gamma$，该参数用来表示像素坐标系两个坐标轴的扭曲。则内参数K变为<br>$$K = \begin{bmatrix} f_{x} &amp; \gamma &amp; u_{0}  \\<br> 0 &amp; f_{y} &amp; v_{0}  \\<br> 0 &amp; 0 &amp; 1 \end{bmatrix}$$<br>关于$\gamma$的介绍，<a href="https://www.cnblogs.com/wangguchangqing/p/8335131.html" target="_blank" rel="noopener">参考博客</a>.</p>
+<h2 id="畸变系数"><a href="#畸变系数" class="headerlink" title="畸变系数"></a>畸变系数</h2><p>TBC.</p>
+<h2 id="关于相机标定的一些笔记"><a href="#关于相机标定的一些笔记" class="headerlink" title="关于相机标定的一些笔记"></a>关于相机标定的一些笔记</h2><p>一种是用棋盘方块来标定，另外一种是张正友标定。可以总结一下。（论文《基于平移和旋转的单目视觉三维重建》关于这两个方面介绍的还不错）</p>
+<h3 id="齐次坐标"><a href="#齐次坐标" class="headerlink" title="齐次坐标"></a>齐次坐标</h3><p>如：$a^{,} = Ra + t$，我们把三维向量的末尾添加1，变成四维向量，称为齐次坐标(参考高翔视觉SLAM十四讲)。<br>$$\begin{bmatrix} a^{,} \\ 1 \end{bmatrix} = \begin{bmatrix} R &amp; t \\ 0 &amp; 1 \end{bmatrix}\begin{bmatrix} a \\ 1\end{bmatrix} := T \begin{bmatrix} a \\ 1\end{bmatrix}<br>$$<br>Q: 为什么齐次坐标乘以一个非零的比例因子，等式仍然成立？不懂。<br>解释：<br><a href="https://blog.csdn.net/lyhbkz/article/details/82254893" target="_blank" rel="noopener">参考博客</a>，这里有解释为什么齐次坐标乘以常数因子，并不改变等式的结果。并且还解释了为什么单应矩阵只有8个自由度(8个未知数)。</p>
+<h3 id="单应矩阵-Hemography"><a href="#单应矩阵-Hemography" class="headerlink" title="单应矩阵(Hemography)"></a>单应矩阵(Hemography)</h3><p>描述两个平面之间的映射关系，<a href="https://www.cnblogs.com/wangguchangqing/p/8287585.html" target="_blank" rel="noopener">参考博客</a>中有具体一点的解释。<br>关于9维的单应矩阵，为什么有8个未知量，参考<a href="https://blog.csdn.net/lyhbkz/article/details/82254893" target="_blank" rel="noopener">这篇博客</a></p>
+<h3 id="张正友标定的相关推导"><a href="#张正友标定的相关推导" class="headerlink" title="张正友标定的相关推导"></a>张正友标定的相关推导</h3><p><a href="https://blog.csdn.net/onthewaysuccess/article/details/40716731" target="_blank" rel="noopener">参考博客1</a><br><a href="https://blog.csdn.net/u010128736/article/details/52860364?depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-3&utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-3" target="_blank" rel="noopener">参考博客2</a></p>
+<h4 id="1、首先将问题转换为单应矩阵的求解"><a href="#1、首先将问题转换为单应矩阵的求解" class="headerlink" title="1、首先将问题转换为单应矩阵的求解"></a>1、首先将问题转换为单应矩阵的求解</h4><p>记 m = (u,v,1) 为二维像素坐标平面的像素坐标点的齐次坐标，三维世界坐标点X在世界坐标系下的坐标为: $X = (X_{w},Y_{w},Z_{w},1)$。<br>由上面分析的相机模型公式，我们可以得到：<br>$$sm = K[R ~~ t]X$$<br>其中，s是尺度因子，K是相机内参，R是旋转矩阵，t是平移向量。<br>做进一步转换：<br>$$s\begin{bmatrix} u \\ v \\ 1 \\<br>\end{bmatrix} = K\begin{bmatrix} r_{1} &amp; r_{2} &amp; r_{3} &amp; t<br>\end{bmatrix} \begin{bmatrix} X_{w} \\ Y_{w} \\ Z_{w} \\ 1 \\<br>\end{bmatrix} $$<br>我们将世界坐标系构造在$Z_{w} = 0$的平面上，得到：<br>$$s\begin{bmatrix} u \\ v \\ 1 \\<br>\end{bmatrix} = K\begin{bmatrix} r_{1} &amp; r_{2} &amp; t<br>\end{bmatrix} \begin{bmatrix} X_{w} \\ Y_{w} \\ 1 \\<br>\end{bmatrix} $$<br>这种形式就和我们上面所说的两个平面之间的映射关系类似，所以，这里 $H = \begin{bmatrix} h_{1} &amp; h_{2} &amp; h_{3}<br>\end{bmatrix} = \lambda K\begin{bmatrix} r_{1} &amp; r_{2} &amp; t<br>\end{bmatrix}$ 就是一个单应矩阵。<br>从上面的分析我们可以知道，齐次坐标乘以一个非零比例因子，等式不改变，所以这里的s可以不考虑。其次从上面的分析我们知道，单应矩阵含有8个未知数，一个点可以得到两个方程，所以要解出H，我们需要4个点。</p>
+<h4 id="2、然后求解内参矩阵"><a href="#2、然后求解内参矩阵" class="headerlink" title="2、然后求解内参矩阵"></a>2、然后求解内参矩阵</h4><p>求出单应矩阵H之后，我们需要利用下面两个约束条件，来求解内参矩阵K：</p>
+<p>1、对于旋转矩阵，我们有 $r_{1},r_{2},r_{3}$ 正交，故 $r_{1}^{T}r_{2} = 0$</p>
+<p>2、$|r_{1}| = |r_{2}| = 1$</p>
+<p>由H矩阵的定义 $H = \begin{bmatrix} h_{1} &amp; h_{2} &amp; h_{3}<br>\end{bmatrix} = \lambda K\begin{bmatrix} r_{1} &amp; r_{2} &amp; t<br>\end{bmatrix}$<br>我们可以得到：<br>$$r_{1} = \frac{1}{\lambda} K^{-1}h_{1}, ~~r_{2} = \frac{1}{\lambda} K^{-1}h_{21}$$</p>
+<p>然后，由上面的两个约束关系，我们可以得到：<br>$$h_{1}^{T}K^{-T}K^{-1}h_{2}=0$$<br>$$h_{1}^{-T}K^{-T}K^{-1}h_{1}=h_{2}^{-T}K^{-T}K^{-1}h_{2}$$</p>
+<p>K矩阵含有5个未知参数，而 $h_{1},h_{2}$ 是单应矩阵参数，已知。所以，一个单应矩阵可以得到两个方程，我们至少需要3个单应矩阵才能解出这5个未知数。故至少需要3幅图片才能解出内参矩阵。</p>
+<p>下面具体的求解步骤，可以参考上面给出的链接，就不在这里介绍了。</p>
+<h4 id="3、最后求解外参矩阵"><a href="#3、最后求解外参矩阵" class="headerlink" title="3、最后求解外参矩阵"></a>3、最后求解外参矩阵</h4><h4 id="4、优化部分-最大似然估计"><a href="#4、优化部分-最大似然估计" class="headerlink" title="4、优化部分-最大似然估计"></a>4、优化部分-最大似然估计</h4>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://jingjing1219.github.io/2020/03/27/Hexo-github%E6%90%AD%E5%BB%BA%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Jingjing1219">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Jingjing's Blogs">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/27/Hexo-github%E6%90%AD%E5%BB%BA%E6%8A%80%E6%9C%AF%E5%8D%9A%E5%AE%A2/" class="post-title-link" itemprop="url">Hexo+github搭建技术博客</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2020-03-27 13:25:06" itemprop="dateCreated datePublished" datetime="2020-03-27T13:25:06+08:00">2020-03-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-07-10 16:06:39" itemprop="dateModified" datetime="2020-07-10T16:06:39+08:00">2020-07-10</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>今天写一篇在windows搭建自己的技术博客的指南，内容包括：</p>
+<ul>
+<li>一些基本概念介绍</li>
+<li>Nodejs安装</li>
+<li>Git for window安装</li>
+<li>GitHub注册</li>
+<li>githubSSH配置</li>
+<li>hexo本地使用</li>
+<li>Sublime安装及使用</li>
+<li>hexo发布到github上</li>
+<li>修改hexo主题</li>
+<li>hexo几个基本指令总结</li>
+<li>个性化设置</li>
+<li>参考链接</li>
+</ul>
+<h2 id="一些基本概念介绍"><a href="#一些基本概念介绍" class="headerlink" title="一些基本概念介绍"></a>一些基本概念介绍</h2><p>首先从What,Why这两个方面来介绍一下我们的文章主题。<br>（官网介绍）Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。<br>Hexo是一款基于Node.js的静态博客框架，依赖少易于安装使用，可以方便的生成静态网页托管在GitHub和Heroku上，是搭建博客的首选框架。（摘自<a href="https://zhuanlan.zhihu.com/p/26625249）" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/26625249）</a><br>为什么要将博客部署到github上？ 首先免费，其次省心，最后可以学习使用 GitHub。（参考链接 <a href="https://io-oi.me/tech/hexo-next-optimization/）" target="_blank" rel="noopener">https://io-oi.me/tech/hexo-next-optimization/）</a></p>
+<h2 id="Nodejs安装"><a href="#Nodejs安装" class="headerlink" title="Nodejs安装"></a>Nodejs安装</h2><p>百度上搜索，下载后直接安装即可</p>
+<h2 id="Git-for-window安装"><a href="#Git-for-window安装" class="headerlink" title="Git for window安装"></a>Git for window安装</h2><p>直接百度搜索git for window，下载安装<br><img src="/images/imgGitFWin.png" alt=""></p>
+<h2 id="GitHub注册"><a href="#GitHub注册" class="headerlink" title="GitHub注册"></a>GitHub注册</h2><p>注册过程比较简单，不再赘述。<br>注册完成后，首先在github上新建一个仓库，命名一定要是 你的账号名.github.io（具体为什么是这样，我暂时还没有弄清楚）<br><img src="/images/githubNew.png" alt=""></p>
+<p>然后测试一下，新建一个文件，index.html，输入代码后提交:<br><img src="/images/index.png" alt=""></p>
+<p>接着复制我们的仓库名，在新的网页中打开，<br><img src="/images/indexOut.png" alt=""></p>
+<p>就会得到以下的结果：<br><img src="/images/helloGit.png" alt=""></p>
+<h2 id="githubSSH配置"><a href="#githubSSH配置" class="headerlink" title="githubSSH配置"></a>githubSSH配置</h2><p>前面 git for window 安装完成后,打开命令控制台，输入 git，出现以下信息表示安装成功<br><img src="/images/gitSuccess.png" alt=""><br>然后打开安装路径下的 Git Bash.exe<br><img src="/images/gitBash.png" alt=""><br>出现以下界面，而后输入命令：ssh-keygen -t rsa -C “你的邮箱”。（相当于本地生成一个链接你账号的密匙）<br><img src="/images/gitKey.png" alt=""><br>然后打开github，选择setting<br><img src="/images/Setting.png" alt=""><br>找到SSH and GPG keys，点击 New ssh key<br><img src="/images/gitHubSSH.png" alt=""><br>Title 随便写，Key 里面的内容，是将文件id_rsa.pub里面的内容复制过来的。（注意id_rsa.pub的位置，在你刚刚 输入命令：ssh-keygen -t rsa -C “你的邮箱” 这一步的时候，界面会出现你的.ssh文件的位置）<br><img src="/images/idRsa.png" alt=""></p>
+<p>至此githubSSH配置完成</p>
+<h2 id="hexo本地使用"><a href="#hexo本地使用" class="headerlink" title="hexo本地使用"></a>hexo本地使用</h2><h3 id="基本介绍"><a href="#基本介绍" class="headerlink" title="基本介绍"></a>基本介绍</h3><p>Hexo 是一个快速、简洁且高效的博客框架。Hexo 使用 Markdown（或其他渲染引擎）解析文章，在几秒内，即可利用靓丽的主题生成静态网页。（官网介绍）</p>
+<p>基于在hexo通过markdown编写的文章，然后hexo帮我们生成静态的html页面，然后，将生成的html上传到我们的服务器。简而言之：hexo是个静态页面生成、上传的工具。<a href="https://www.jianshu.com/p/1c888a6b8297?utm_source=oschina-app" target="_blank" rel="noopener">参考博客1</a></p>
+<h3 id="使用过程"><a href="#使用过程" class="headerlink" title="使用过程"></a>使用过程</h3><p>百度搜索HEXO，点开hexo官方文档<br><img src="/images/hexoBaidu.png" alt=""><br>在D盘新建一个blog的文件夹（ 这个文件夹作为你的博客的主目录，然后使用CMD命令行进入到这个目录下执行初始化命令：hexo init）。<br>打开控制命令台，到D文件夹下的blog文件夹里，然后输入安装命令，等待安装完成。<br><img src="/images/hexoInstall.png" alt=""><br>然后初始化博客（这个过程比较长）: hexo init blog<br><img src="/images/initBlog.png" alt=""><br>上图红方框表示初始化完成了，但是黄方框代表什么？我看别的教程上好像没有这个现象，但是好像对后面的过程没有什么影响。<br>接下来，执行npm install命令。也出现了上面黄色框标出来的问题。</p>
+<p>下面输入hexo s -p 5555，也可以直接hexo s。 (s表示start)<br><img src="/images/hexoS.png" alt=""><br>进入上面提示的网页，就可以打开我们的本地博客了。<br><img src="/images/hexo.png" alt=""></p>
+<h2 id="Sublime安装及使用"><a href="#Sublime安装及使用" class="headerlink" title="Sublime安装及使用"></a>Sublime安装及使用</h2><p>（也可以使用其他软件，或者不使用软件都可以。）<br>直接搜索下载然后安装。安装完成后，在安装路径下打开sublime_text.exe, 然后可以将我们的blog文件夹拖进来。<br><img src="/images/sublimeFirst.png" alt=""><br>可以修改一点东西，Ctrl+s保存，然后刷新刚刚打开的网页localhost:5555，就可以看到网页有变化。</p>
+<h2 id="hexo发布到github上"><a href="#hexo发布到github上" class="headerlink" title="hexo发布到github上"></a>hexo发布到github上</h2><p>首先在刚刚创建的blog文件夹下的_config.yml 中修改参数，此网页 (<a href="https://hexo.io/zh-cn/docs/one-command-deployment" target="_blank" rel="noopener">https://hexo.io/zh-cn/docs/one-command-deployment</a>) ，有教程关于一键部署的。<br>总结一下就是修改一下几个地方：<br><img src="/images/comfig.png" alt=""><br>然后安装hexo-deployer-git：<br><img src="/images/installDevelop.png" alt=""><br>然后生成：hexo g; 提交：hexo d.<br>提交会出现下图的情况：<br><img src="/images/hexod.png" alt=""><br>分别在命令行执行框出来的这两条指令就可以了，当然要改成你自己的邮箱和github的账户名。 有时候情况可能会不一样，但肯定会出现叫你输入相关信息的东西，仔细看这些英文提示。我这边有提示出错，但让再输入一次账号和密码，就成功了：<br><img src="/images/githubinput.png" alt=""><br>下面打开自己的(<a href="https://Jingjing1219.github.io">https://Jingjing1219.github.io</a>) ，就会看到Hexo页面。<br><img src="/images/hexoGithub.png" alt=""></p>
+<h2 id="修改hexo主题"><a href="#修改hexo主题" class="headerlink" title="修改hexo主题"></a>修改hexo主题</h2><p>我们使用Next主题，首先在主题里搜索next，然后打开，里面找到下载主题的选项。下载完成后解压，重命名为next，放到Blog里面的主题文件夹下。<br><img src="/images/next.png" alt=""><br>然后要修改配置文件，上文中提到的blog文件夹下的_config.yml 中，将主题后面修改为next<br><img src="/images/nextComfig.png" alt=""><br>然后保存，在主页预览一下，就会发现主题修改成功。</p>
+<p>在next文件夹下面的配置文件中，还可以修改不同的next的风格：<br><img src="/images/nextStyle.png" alt=""></p>
+<h2 id="hexo几个基本指令总结"><a href="#hexo几个基本指令总结" class="headerlink" title="hexo几个基本指令总结"></a>hexo几个基本指令总结</h2><p>Hexo指令总结：<br>Hexo clean 清理一下；<br>Hexo g: 生成（generate）；<br>Hexo s -p 5555: 发布到localhost:5555的博客网站（hexo s 启动预览（start））<br>Hexo d: 提交到github上；</p>
+<h2 id="个性化设置"><a href="#个性化设置" class="headerlink" title="个性化设置"></a>个性化设置</h2><p><a href="https://zhuanlan.zhihu.com/p/26625249" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/26625249</a></p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>(<a href="https://www.bilibili.com/video/BV1Yb411a7ty/?spm_id_from=333.788.videocard.4" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1Yb411a7ty/?spm_id_from=333.788.videocard.4</a>)<br>(<a href="https://www.bilibili.com/video/BV1cW411A7Jx?t=47&amp;p=7" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1cW411A7Jx?t=47&amp;p=7</a>)</p>
+<h2 id="关于如何写博客"><a href="#关于如何写博客" class="headerlink" title="关于如何写博客"></a>关于如何写博客</h2><p>（基于markdown格式的语法）<br>新建一个自己的博客：命令行输入：hexo n “我的第一篇博客”<br><img src="/images/firstBlog.png" alt=""><br>然后按照以下格式编辑格式：<br><img src="/images/markdown.png" alt=""><br>这里的K就是相机内参，T就是相机外参。</p>
+<p>参考链接：(<a href="https://www.jianshu.com/p/5dbbba71b52d" target="_blank" rel="noopener">https://www.jianshu.com/p/5dbbba71b52d</a>)</p>
+<h2 id="博客的一些设置"><a href="#博客的一些设置" class="headerlink" title="博客的一些设置"></a>博客的一些设置</h2><ul>
+<li><p>增加侧栏菜单条目<br>默认的侧栏菜单条目有：首页、归档、标签、关于、搜索等。如果你想要增加其他的菜单条目，修改主题配置文件_config.yml里的Menu Settings中的menu和menu_icons两个地方。</p>
+</li>
+<li><p>插入图片之图床法<br>这时考虑把博文里的图片上传到某一网站，然后获得外部链接，使用Markdown语法，<img src="%E5%A4%96%E9%83%A8%E9%93%BE%E6%8E%A5" alt="图片信息"> 完成图片的插入，这种网站就被成为图床。常见的简易的图床网站有：贴图库图片外链 国内算比较好的图床我认为有两个：新浪微博和 七牛云 ，七牛云的使用方法可以参看其他文章。图床最重要的就是稳定速度快，所以在挑选图床的时候一定要仔细。<a href="https://zhuanlan.zhihu.com/p/26625249" target="_blank" rel="noopener">参考博客</a><br>如何使用七牛云参考链接(<a href="https://www.jianshu.com/p/6dce6094bf61" target="_blank" rel="noopener">https://www.jianshu.com/p/6dce6094bf61</a>)</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="en">
     <link itemprop="mainEntityOfPage" href="https://jingjing1219.github.io/2020/03/25/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -287,7 +625,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">14</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
